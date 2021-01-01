@@ -14,6 +14,8 @@ file1.txt has the following format as in the example file "lesson1.txt":
 	word,meaning,meaning,meaning
 	...  
 
+It should thereby also be able to read regular CSV files.
+
 The script will shuffle the words and then ask for them, with wrong answers being shuffled and appended at the end.  
 
 It will detect the right or wrong answer, even if you only use ASCII characters and also if it contains at most one typo. 
