@@ -51,7 +51,7 @@ fi
 
 for file in $FILES; do
 	if ! file $file | grep -q "text"; then
-		echo "$FILE doesn't appear to be a text file! Exiting.."
+		echo "$file doesn't appear to be a text file! Exiting.."
 		exit 1
 	fi
 done
