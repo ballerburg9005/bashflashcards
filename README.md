@@ -25,3 +25,33 @@ correct answer: diĝir
 
 
 I did not test this much yet.
+
+Sample Output
+=============
+% bashflashcards lession1_abridged.txt
+================== lugal ==================
+ANSWER: king
++:)+RIGHT+(:+
+king
+=================== nin ===================
+ANSWER: ladyy
++:)+RIGHT+(:+
+lady
+=================== e₂ ===================
+ANSWER: houzee
+-:(-WRONG-):-
+house
+--->Still 1 to go!
+=================== e₂ ===================
+ANSWER: hauus
+-:(-WRONG-):-
+house
+--->Still 1 to go!
+=================== e₂ ===================
+ANSWER: house
++:)+RIGHT+(:+
+house
+ALL DONE! AWESOME!
+STATS: You answered incorrectly 2 times, for the following words:
+STATS: e₂ 
+
