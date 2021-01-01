@@ -34,7 +34,7 @@ Sample Output
  % bashflashcards lession1_abridged.txt
 
 	================= dub-sar =================
-	ANSWER: tablet-writer
+	ANSWER: tablet-writer (user input)
 	scribe, "tablet-writer"
 				      :)++RIGHT++(:
 	=================== me₃ ===================
@@ -59,7 +59,7 @@ Sample Output
  % bashflashcards -r lession1_abridged.txt
 
 	============== battle, combat =============
-	ANSWER: nita2
+	ANSWER: nita2 (user input)
 	me₃
 				      --:(WRONG):--
 	========= scribe, "tablet-writer" =========
