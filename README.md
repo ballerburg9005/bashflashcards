@@ -3,7 +3,7 @@ Bash Flash Cards
 
 This is a simple bash script to train vocabulary.
 
-/usr/local/bin/bashflashcards [OPTION] file1.txt [file2.txt] .. [fileN.txt]
+bashflashcards [OPTION] file1.txt [file2.txt] .. [fileN.txt]
 OPTION: -r -reverse		Switches between asking for meaning or word.
 
 file1.txt has the following format as in the example file:
