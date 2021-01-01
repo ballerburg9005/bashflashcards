@@ -3,14 +3,14 @@ Bash Flash Cards
 
 This is a simple bash script to train vocabulary.
 
-bashflashcards [OPTION] file1.txt [file2.txt] .. [fileN.txt]  
-OPTION: -r -reverse		Switches between asking for meaning or word.  
+	bashflashcards [OPTION] file1.txt [file2.txt] .. [fileN.txt]  
+	OPTION: -r -reverse		Switches between asking for meaning or word.  
 
 file1.txt has the following format as in the example file "lesson1.txt":  
-#comments  
-word1	meaning, meaning, meaning  
-word2[:space:]+meaning,meaning,meaning  
-...  
+	#comments  
+	word1	meaning, meaning, meaning  
+	word2[:space:]+meaning,meaning,meaning  
+	...  
 
 The script will shuffle the words and then ask for them, with wrong answers being shuffled and appended at the end.  
 
