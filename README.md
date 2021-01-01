@@ -1,7 +1,7 @@
 Bash Flash Cards
 ================
 
-This is a bash script to train vocabulary, alike flash cards.
+This is a bash script to train vocabulary, alike flash cards. Only tested on Linux!
 
 	bashflashcards [OPTION] file1.txt [file2.txt] .. [fileN.txt]  
 	OPTION: -r -reverse		Switches between asking for meaning or word.  
