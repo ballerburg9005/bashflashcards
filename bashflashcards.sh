@@ -1,5 +1,11 @@
 #!/bin/bash
 
+##### USER SETTINGS #####
+MAXTYPOS=1
+SEP="[:space:];," # grep
+#########################
+
+# measures difference between two words for typo checking
 function levenshtein {
     if [ "$#" -ne "2" ]; then
         echo "Usage: $0 word1 word2" >&2
@@ -36,15 +42,23 @@ REVERSE="false"
 FILES="$@"
 if [[ " --help -help -h " =~ " $1 " || "$1" == "" ]]; then 
 	echo "$0 [OPTION] file1.txt [file2.txt] .. [fileN.txt]"
-	echo "OPTION: -r -reverse		Switches between meaning and word."
+	echo "OPTION: -r -reverse		Switches between asking for the vocabulary word or the meaning of it."
 	exit -1
-elif [[ " --reverse -r " =~ " $1 " || "$1" == "" ]]; then
+elif [[ " --reverse -r " =~ " $1 " ]]; then
 	REVERSE="true"
 	FILES="$(echo "$@" | sed "s/^[^ ]* //g")"
 fi
 
+for file in $FILES; do
+	if ! file $file | grep -q "text"; then
+		echo "$FILE doesn't appear to be a text file! Exiting.."
+		exit 1
+	fi
+done
+
 LINESLEFT="$(IFS=' ' cat $FILES | shuf)"
 
+# stats
 WRONGCTR="0"
 WRONGARR=()
 
@@ -52,43 +66,63 @@ while [[ "$LINESLEFT" != "" ]]; do
 	NEWLINES=""
 	while read -u 3 line; do
 		if [[ "$line" =~ ^"#" ]]; then continue
-		elif echo "$line" | grep -q "^[^[:space:]]\+[[:space:]]\+[^[:space:]]\+.*$"; then 
-			WORD=("$(echo "$line" | grep -osa "^[^[:space:]]*")")
-			WORDS="$WORD"
-			IFS=', ' read -r -a MEANINGS <<< "$(echo "$line" | sed "s/^[^[:space:]]*[[:space:]]\+//g")"
+		elif echo "$line" | grep -q "^[^${SEP}]\+[${SEP}]\+[^${SEP}]\+.*$"; then 
+			WORD=("$(echo "$line" | grep -osa "^[^${SEP}]*")")
+			WORDS=("$WORD")
+			NOMEANING=(); IFS=', ' read -r -a NOMEANING <<< "$(echo "$line" | sed "s/^[^${SEP}]*[${SEP}]\+//g")"
+			MEANINGS=(); for i in "${NOMEANING[@]}"; do if [[ "$(echo "$i" | sed "s/[[:space:]\"]*//g")" != "" ]]; then MEANINGS+=("$i"); fi; done
+
 			if [[ "$REVERSE" == "true" ]]; then
-				SAVER=("${WORDS[@]}") 
+				TEMPVAR=("${WORDS[@]}") 
 				WORDS=("${MEANINGS[@]}") 
-				MEANINGS=("${SAVER[@]}")
+				MEANINGS=("${TEMPVAR[@]}")
 				askwords="$(echo ${WORDS[@]} | sed 's/ /, /g')"
 			else
 				askwords="${WORDS[0]}"
 			fi 
-			
-			echo "$( echo " $askwords " | sed  -e :a -e 's/^.\{1,41\}$/=&=/;ta' )"
+
+			MEANINGSPRINT="$(echo ${MEANINGS[@]} | sed 's/ /, /g')"
+			# this adds alternative spellings to the list of correct solutions, in form of: (i)kala(gb) -> kala, ikalagb, kalagb, ikala
+			# can only handle up to two parenthesis
+			for i in "${MEANINGS[@]}"; do 
+				if echo "$i" | grep -osaq "(.\+)"; then
+
+					for j in `echo 	"$(echo "$i" | sed "s/\(.*\)([^\(\)]\+)/\1/") \
+							 $(echo "$i" | sed "s/([^\(\)]\+)//") \
+							 $(echo "$i" | sed "s/([^\(\)]\+)//g") \
+						 	 $(echo "$i")" | sed "s/[\(\)]*//g" | xargs -n1 | sort -u | xargs`; do
+						MEANINGS+=("$j")
+					done
+				fi
+			done
+			TEMPVAR="$( echo " $askwords " | sed  -e :a -e 's/^.\{1,41\}$/=&=/;ta' )"
+			while [ ${#TEMPVAR} -lt 43 ]; do TEMPVAR="=$TEMPVAR"; done
+			echo "$TEMPVAR"
+
 			read -p "ANSWER: " answer
 			
+			echo "$MEANINGSPRINT"
+
 			WRONG="true"
 			for meaning in ${MEANINGS[@]}; do
 				meaning="$(echo "$meaning" | sed "s/[[:space:]\"]*//g")"
 				answer="$(echo "$answer" | sed "s/[[:space:]\"]*//g")"
+				# iconv transcribes characters to the next best ASCII thing, used for checking if the answer is sort of correct
 				simpmeaning="$(echo "$meaning" | iconv -f utf-8 -t ascii//TRANSLIT | sed "s/[^A-z0-9\-\_]//g")"
 				simpanswer="$(echo "$answer" | iconv -f utf-8 -t ascii//TRANSLIT | sed "s/[^A-z0-9\-\_]//g")"
-				if [ "$(levenshtein "$simpmeaning" "$simpanswer")" -lt "2" ] || [[ "$meaning" == "$answer" ]]; then
+				if [ "$(levenshtein "$simpmeaning" "$simpanswer")" -lt "$(($MAXTYPOS+1))" ] || [[ "$meaning" == "$answer" ]]; then
 					WRONG="false"
-					echo "+:)+RIGHT+(:+"
+					echo "                              :)++RIGHT++(:"
 					break
 				fi
 			done
+
 			if [[ "$WRONG" == "true" ]]; then
 				WRONGCTR="$(($WRONGCTR + 1))"
 				WRONGARR+=("$WORD")
-				echo "-:(-WRONG-):-"
+				echo "                              --:(WRONG):--"
 				NEWLINES="$(echo -e "$line\n$NEWLINES")"
 			fi
-			echo "$(echo ${MEANINGS[@]} | sed 's/ /, /g')"
-
-	#iconv -f utf-8 -t ascii//TRANSLIT
 		fi
 	done 3< <(echo "$LINESLEFT" | shuf)
 
@@ -102,8 +136,8 @@ done
 if [[ "$LINESLEFT" == "" ]]; then
 	echo "ALL DONE! AWESOME!"
 	if [ "$WRONGCTR" -gt "0" ]; then
-		echo "STATS: You answered incorrectly $WRONGCTR times, for the following words:"
-		echo "STATS: $(echo "${WRONGARR[*]}" | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+		echo "STATS: $WRONGCTR wrong answers."
+		echo "STATS: Wrong words: $(echo "${WRONGARR[*]}" | tr ' ' '\n' | sort -u | tr '\n' ' ')"
 	else
 		echo "YOU MADE ZERO MISTAKES!"
 	fi
