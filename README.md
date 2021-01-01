@@ -56,3 +56,26 @@ Sample Output
 	STATS: You answered incorrectly 2 times, for the following words:
 	STATS: e₂ 
 
+
+	% bashflashcards -r lession1_abridged.txt
+	================== house ==================
+	ANSWER: e2
+	+:)+RIGHT+(:+
+	e₂
+	================== king ==================
+	ANSWER: lugal
+	+:)+RIGHT+(:+
+	lugal
+	================== lady ==================
+	ANSWER: krem
+	-:(-WRONG-):-
+	nin
+	--->Still 1 to go!
+	================== lady ==================
+	ANSWER: nin
+	+:)+RIGHT+(:+
+	nin
+	ALL DONE! AWESOME!
+	STATS: You answered incorrectly 1 times, for the following words:
+	STATS: nin 
+
