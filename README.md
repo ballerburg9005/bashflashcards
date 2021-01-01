@@ -33,7 +33,7 @@ correct answer: diĝi(r)
 Sample Output
 =============
 
- % bashflashcards lession1_abridged.txt
+ % bashflashcards lesson1_abridged.txt
 
 	================= dub-sar =================
 	ANSWER: tablet-writer (user input)
@@ -58,7 +58,7 @@ Sample Output
 	ALL DONE! AWESOME!
 	YOU MADE ZERO MISTAKES!
 
- % cat lession1_abridged.txt | bashflashcards -r
+ % cat lesson1_abridged.txt | bashflashcards -r
 
 	============== battle, combat =============
 	ANSWER: nita2 (user input)
