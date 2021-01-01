@@ -2,7 +2,7 @@
 
 ##### USER SETTINGS #####
 MAXTYPOS=1
-SEP="[:space:];," # grep
+SEP="[:space:];," # grep word/meaning separator
 #########################
 
 # measures difference between two words for typo checking
