@@ -40,23 +40,30 @@ function levenshtein {
 
 REVERSE="false"
 FILES="$@"
-if [[ " --help -help -h " =~ " $1 " || "$1" == "" ]]; then 
-	echo "$0 [OPTION] file1.txt [file2.txt] .. [fileN.txt]"
-	echo "OPTION: -r -reverse		Switches between asking for the vocabulary word or the meaning of it."
-	exit -1
-elif [[ " --reverse -r " =~ " $1 " ]]; then
+
+if [[ " --reverse -r " =~ " $1 " ]]; then
 	REVERSE="true"
 	FILES="$(echo "$@" | sed "s/^[^ ]* //g")"
 fi
 
-for file in $FILES; do
-	if ! file $file | grep -q "text"; then
-		echo "$file doesn't appear to be a text file! Exiting.."
-		exit 1
-	fi
-done
+if [ -p /dev/stdin ]; then
+	MYINPUT="$(</dev/stdin)"
+elif [[ " --help -help -h " =~ " $1 " || "$1" == "" ]]; then 
+	echo "$0 [OPTION] file1.txt [file2.txt] .. [fileN.txt]"
+	echo "OPTION: -r -reverse		Switches between asking for the vocabulary word or the meaning of it."
+	exit -1
+else 
+	for file in $FILES; do
+		if ! file $file | grep -q "text"; then
+			echo "$file doesn't appear to be a text file! Exiting.."
+			exit 1
+		fi
+	done
+	MYINPUT="$(IFS=' ' cat $FILES)"
+fi
 
-LINESLEFT="$(IFS=' ' cat $FILES | shuf)"
+
+LINESLEFT="$(echo "$MYINPUT" | shuf)"
 
 # stats
 WRONGCTR="0"
@@ -64,7 +71,7 @@ WRONGARR=()
 
 while [[ "$LINESLEFT" != "" ]]; do
 	NEWLINES=""
-	while read -u 3 line; do
+	while read -u 66 line; do
 		if [[ "$line" =~ ^"#" ]]; then continue
 		elif echo "$line" | grep -q "^[^${SEP}]\+[${SEP}]\+[^${SEP}]\+.*$"; then 
 			WORD=("$(echo "$line" | grep -osa "^[^${SEP}]*")")
@@ -83,7 +90,7 @@ while [[ "$LINESLEFT" != "" ]]; do
 
 			MEANINGSPRINT="$(echo ${MEANINGS[@]} | sed 's/ /, /g')"
 			# this adds alternative spellings to the list of correct solutions, in form of: (i)kala(gb) -> kala, ikalagb, kalagb, ikala
-			# can only handle up to two parenthesis
+			# can only handle up to two parenthesis correctly and will sort of ignore the ones in the middle
 			for i in "${MEANINGS[@]}"; do 
 				if echo "$i" | grep -osaq "(.\+)"; then
 
@@ -99,7 +106,7 @@ while [[ "$LINESLEFT" != "" ]]; do
 			while [ ${#TEMPVAR} -lt 43 ]; do TEMPVAR="=$TEMPVAR"; done
 			echo "$TEMPVAR"
 
-			read -p "ANSWER: " answer
+			read -p "ANSWER: " answer </dev/tty
 			
 			echo "$MEANINGSPRINT"
 
@@ -124,7 +131,7 @@ while [[ "$LINESLEFT" != "" ]]; do
 				NEWLINES="$(echo -e "$line\n$NEWLINES")"
 			fi
 		fi
-	done 3< <(echo "$LINESLEFT" | shuf)
+	done 66< <(echo "$LINESLEFT" | shuf)
 
 	LINESLEFT="$NEWLINES"
 

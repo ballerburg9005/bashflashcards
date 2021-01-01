@@ -58,7 +58,7 @@ Sample Output
 	ALL DONE! AWESOME!
 	YOU MADE ZERO MISTAKES!
 
- % bashflashcards -r lession1_abridged.txt
+ % cat lession1_abridged.txt | bashflashcards -r
 
 	============== battle, combat =============
 	ANSWER: nita2 (user input)
