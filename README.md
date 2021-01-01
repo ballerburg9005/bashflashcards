@@ -30,7 +30,9 @@ correct answer: diĝi(r)
 
 Sample Output
 =============
+
  % bashflashcards lession1_abridged.txt
+
 	================= dub-sar =================
 	ANSWER: tablet-writer
 	scribe, "tablet-writer"
