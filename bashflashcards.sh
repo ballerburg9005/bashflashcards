@@ -76,7 +76,7 @@ while [[ "$LINESLEFT" != "" ]]; do
 		elif echo "$line" | grep -q "^[^${SEP}]\+[${SEP}]\+[^${SEP}]\+.*$"; then 
 			WORD=("$(echo "$line" | grep -osa "^[^${SEP}]*")")
 			WORDS=("$WORD")
-			NOMEANING=(); IFS=', ' read -r -a NOMEANING <<< "$(echo "$line" | sed "s/^[^${SEP}]*[${SEP}]\+//g")"
+			NOMEANING=(); IFS=',' read -r -a NOMEANING <<< "$(echo "$line" | sed "s/^[^${SEP}]*[${SEP}]\+//g" | sed "s/, /,/g")"
 			MEANINGS=(); for i in "${NOMEANING[@]}"; do if [[ "$(echo "$i" | sed "s/[[:space:]\"]*//g")" != "" ]]; then MEANINGS+=("$i"); fi; done
 
 			if [[ "$REVERSE" == "true" ]]; then
@@ -88,7 +88,7 @@ while [[ "$LINESLEFT" != "" ]]; do
 				askwords="${WORDS[0]}"
 			fi 
 
-			MEANINGSPRINT="$(echo ${MEANINGS[@]} | sed 's/ /, /g')"
+			MEANINGSPRINT="$(IFS=','; printf '%s\n' "${MEANINGS[*]}" | sed "s/,/, /g")"
 			# this adds alternative spellings to the list of correct solutions, in form of: (i)kala(gb) -> kala, ikalagb, kalagb, ikala
 			# can only handle up to two parenthesis correctly and will sort of ignore the ones in the middle
 			for i in "${MEANINGS[@]}"; do 
