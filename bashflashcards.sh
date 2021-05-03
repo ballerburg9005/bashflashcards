@@ -111,7 +111,7 @@ while [[ "$LINESLEFT" != "" ]]; do
 			echo "$MEANINGSPRINT"
 
 			WRONG="true"
-			for meaning in ${MEANINGS[@]}; do
+			for meaning in "${MEANINGS[@]}"; do
 				meaning="$(echo "$meaning" | sed "s/[[:space:]\"]*//g")"
 				answer="$(echo "$answer" | sed "s/[[:space:]\"]*//g")"
 				# iconv transcribes characters to the next best ASCII thing, used for checking if the answer is sort of correct
